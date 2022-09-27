@@ -1,0 +1,11 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: upload-service
+  cloud:
+    nacos:
+      discovery:
+#        namespace: dev #设置服务列表的环境
+        server-addr: 124.221.138.97:8848
