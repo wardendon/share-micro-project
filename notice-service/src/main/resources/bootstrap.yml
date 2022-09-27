@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: notice-service
+  cloud:
+    nacos:
+      config:
+        server-addr: http://api.w2gd.top:8848
+        file-extension: yml
+        # prefix: 文件名前缀， 默认是spring.application.name
+        # 如果没有指定命名空间，则默认命名空间为PUBLIC
+        namespace: dev
+        # 如果没有配置GROUP, 则默认值为 DEFAULT_GROUP
+        group: DEFAULT_GROUP
+        # 从 Nacos 读取配置项到超时时间
+        timeout: 5000
+        # 轮询重试时间
+        config-retry-time: 2000
+        # 长轮询超时时间
+        config-long-poll-timeout: 10000
+        # 轮询最大重试次数
+        max-retry: 3
+        # 开启监听和自动刷新
+        refresh-enabled: true
+        # Nacos 的扩展配置项，数字越大优先级越高
+        extension-configs:
+          - dataId: redis-config.yml
+            group: EXT_GROUP
+            refresh: true

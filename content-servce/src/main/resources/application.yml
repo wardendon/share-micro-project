@@ -1,0 +1,43 @@
+server:
+  port: 8082
+
+logging:
+  level:
+    top.w2gd.content.openfeign.UserService: debug
+
+# 以下配置依靠nacos配置管理来控制
+#spring:
+#  application:
+#    name: content-service
+#  jackson:
+#    date-format: yyyy-MM-dd HH:mm:ss
+#    timezone: GMT+8
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: http://api.w2gd.top:8848
+#      username: nacos
+#      password: ******
+#  datasource:
+#    url: jdbc:mysql://124.221.138.97:3306/share?serverTimezone=Asia/Shanghai&characterEncoding=utf-8
+#    hikari:
+#      username: root
+#      password: *******
+#      driver-class-name: com.mysql.cj.jdbc.Driver
+##
+#feign:
+#  circuitbreaker:
+#    enabled: true
+#
+#  client:
+#    config:
+#      # 全局超时配置
+#      default:
+#        # 网络连接阶段1秒超时
+#        connectTimeout: 1000
+#        # 服务请求响应阶段5秒超时
+#        readTimeout: 5000
+#      # 正对某个特定服务的超时配置
+#      user-service:
+#        connectTimeout: 1000
+#        readTimeout: 2000
