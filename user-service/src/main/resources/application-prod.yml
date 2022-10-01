@@ -1,0 +1,14 @@
+server:
+  port: 8088
+
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: http://api.w2gd.top:8848
+        heart-beat-interval: 5000
+        heart-beat-timeout: 20000
+        namespace: prod
+        register-enabled: true
+  jpa:
+    open-in-view: false

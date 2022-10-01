@@ -1,27 +1,23 @@
 package top.w2gd.user.service;
 
-import top.w2gd.user.domain.dto.UserDto;
 import top.w2gd.user.domain.entity.User;
+import top.w2gd.user.domain.entity.dto.UserDto;
 
 /**
- * @Description TODO
- * @Date 2022-09-06-15-52
- * @Author qianzhikang
+ * @author w2gd
  */
-
 public interface UserService {
     /**
-     * 根据id查用户
+     *  根据id找用户
      * @param id id
-     * @return User
+     * @return user
      */
     User findById(Integer id);
 
     /**
-     * 用户登陆
-     * @param userDto 登陆信息
-     * @return User
+     * 用户登录方法
+     * @param userDto
+     * @return
      */
     User login(UserDto userDto);
-
 }

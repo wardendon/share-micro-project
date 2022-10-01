@@ -2,7 +2,6 @@ package top.w2gd.gateway.congif;
 
 import com.alibaba.cloud.nacos.NacosConfigManager;
 import com.alibaba.cloud.nacos.NacosConfigProperties;
-import com.alibaba.nacos.api.config.ConfigService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -25,7 +24,7 @@ public class DynamicRoutesLoader implements InitializingBean {
     @Resource
     private DynamicRoutesListener dynamicRoutesListener;
 
-    private static final String ROUTES_CONFIG = "routes-config.json";
+    private static final String ROUTES_CONFIG = "gateway-service.yml";
 
     @Override
     public void afterPropertiesSet() throws Exception {

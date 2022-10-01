@@ -33,8 +33,9 @@ public class DynamicRoutesListener implements Listener {
     @Override
     public void receiveConfigInfo(String configInfo) {
         log.info("received routes changes {}", configInfo);
-        // 接受远程JSON字符串， 获取路由规则
-        List<RouteDefinition> definitionList = JSON.parseArray(configInfo,RouteDefinition.class);
-        gatewayService.updateRoutes(definitionList);
+        // 接受远程JSON字符串， 获取路由规则, (读远程 yml 文件把这两行注释掉，读JSON文件则打开)
+        // List<RouteDefinition> definitionList = JSON.parseArray(configInfo,RouteDefinition.class);
+        // gatewayService.updateRoutes(definitionList);
+
     }
 }

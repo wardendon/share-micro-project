@@ -12,29 +12,21 @@ import javax.persistence.Id;
 import java.util.Date;
 
 /**
- * @Description TODO
- * @Date 2022-09-06-15-49
- * @Author qianzhikang
+ * @author w2gd
  */
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Entity
 public class User {
-    /**
-     * 主健
-     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-
     private String mobile;
 
-
     private String password;
-
 
     private String nickname;
 
@@ -47,7 +39,4 @@ public class User {
     private Date updateTime;
 
     private Integer bonus;
-
-
-
 }

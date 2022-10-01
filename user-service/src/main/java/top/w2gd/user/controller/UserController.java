@@ -1,42 +1,43 @@
 package top.w2gd.user.controller;
 
-import com.alibaba.csp.sentinel.annotation.SentinelResource;
-
-
-
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.w2gd.user.common.ResponseResult;
-import top.w2gd.user.domain.dto.UserDto;
+import top.w2gd.user.common.ResultCode;
+import top.w2gd.user.domain.entity.User;
+import top.w2gd.user.domain.entity.dto.UserDto;
 import top.w2gd.user.service.UserService;
 
 /**
- * @Description TODO
- * @Date 2022-09-06-16-15
- * @Author qianzhikang
+ * @author w2gd
  */
 @RestController
-@RequestMapping("/users")
+@Slf4j
+@RequestMapping(value = "/users")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserController {
-    private final UserService userService;
+    public final UserService userService;
 
     @GetMapping("{id}")
-    @SentinelResource(value = "getUserById")
-    public ResponseResult getUserById(@PathVariable Integer id){
-        //try {
-        //    Thread.sleep(3000);
-        //} catch (InterruptedException e) {
-        //    throw new RuntimeException(e);
-        //}
-        //int cmd = 3/0;
-        return ResponseResult.success(userService.findById(id));
+    public ResponseResult getUserById(@PathVariable Integer id) {
+        // try {
+        //     Thread.sleep(3000);
+        // } catch (InterruptedException e) {
+        //     throw new RuntimeException(e);
+        // }
+        val user  = userService.findById(id);
+        if (user != null) {
+            return ResponseResult.success(user);
+        } else {
+            return ResponseResult.failure(ResultCode.RESULT_CODE_DATA_NONE);
+        }
     }
 
     @PostMapping("/login")
-    public ResponseResult login(UserDto userDto){
+    public ResponseResult login(@RequestBody UserDto userDto) {
         return ResponseResult.success(userService.login(userDto));
     }
-
 }
