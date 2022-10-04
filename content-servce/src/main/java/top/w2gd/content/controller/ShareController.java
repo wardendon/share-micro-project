@@ -5,10 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import top.w2gd.content.auth.CheckAuthorization;
 import top.w2gd.content.common.ResponseResult;
 import top.w2gd.content.common.ResultCode;
 import top.w2gd.content.domain.dto.ShareDto;
@@ -60,4 +58,17 @@ public class ShareController {
 
         return ResponseResult.success(shareDto);
     }
+
+    public ResponseResult getAllSharesFallback(){
+        log.info("接口被熔断降级");
+        return ResponseResult.failure(ResultCode.INTERFACE_FALLBACK);
+    }
+
+    // @CheckAuthorization("admin")
+    // public ResponseResult auditShareById(@PathVariable Integer id, @RequestBody ShareDto shareDto){
+    //
+    // }
+
+
+
 }

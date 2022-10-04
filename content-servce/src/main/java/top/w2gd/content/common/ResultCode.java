@@ -46,6 +46,7 @@ public enum ResultCode {
     INTERFACE_ADDRESS_INVALID(60004, "接口地址无效"),
     INTERFACE_REQUEST_TIMEOUT(60005, "接口请求超时"),
     INTERFACE_EXCEED_LOAD(60006, "接口负载过高"),
+    INTERFACE_FALLBACK(60006, "接口被熔断降级"),
 
     /* 权限错误：70001-79999 */
     PERMISSION_NO_ACCESS(70001, "无访问权限");

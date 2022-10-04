@@ -23,6 +23,7 @@
         <sentinel.version>1.8.3</sentinel.version>
         <components.version>3.1.1</components.version>
         <rabbit-version>3.2.2</rabbit-version>
+        <jwt.version>0.11.5</jwt.version>
     </properties>
 
     <dependencies>
@@ -114,6 +115,31 @@
 <!--            <artifactId>spring-cloud-starter-sleuth</artifactId>-->
 <!--            <version>${spring.cloud.version}</version>-->
 <!--        </dependency>-->
+
+        <!--Spring AOP-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <!--jwt相关-->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jwt.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jwt.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jwt.version}</version>
+        </dependency>
 
     </dependencies>
 
