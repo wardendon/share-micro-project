@@ -14,6 +14,7 @@ import top.w2gd.content.domain.entity.Share;
 import top.w2gd.content.service.ShareService;
 
 /**
+ * 审核
  * @author w2gd
  */
 @RestController

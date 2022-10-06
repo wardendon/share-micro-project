@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import top.w2gd.content.auth.CheckAuthorization;
 import top.w2gd.content.common.ResponseResult;
 import top.w2gd.content.common.ResultCode;
+import top.w2gd.content.domain.dto.AuditShareDto;
 import top.w2gd.content.domain.dto.ShareDto;
 import top.w2gd.content.domain.entity.Share;
 import top.w2gd.content.domain.entity.User;
@@ -25,6 +26,7 @@ import top.w2gd.content.service.ShareService;
 public class ShareController {
     private final ShareService shareService;
     private final UserService userService;
+
 
     @GetMapping("/all")
     @SentinelResource(value = "getAllShares")
@@ -64,10 +66,18 @@ public class ShareController {
         return ResponseResult.failure(ResultCode.INTERFACE_FALLBACK);
     }
 
-    // @CheckAuthorization("admin")
-    // public ResponseResult auditShareById(@PathVariable Integer id, @RequestBody ShareDto shareDto){
-    //
-    // }
+    /**
+     * 此处需要授权
+     * @param auditShareDto auditShareDto
+     * @return ResponseResult
+     */
+    @CheckAuthorization("admin")
+    @PostMapping("/audit")
+    public ResponseResult auditShare( @RequestBody AuditShareDto auditShareDto){
+        log.info(auditShareDto+ ">>>>>>");
+        Share share = shareService.auditShare(auditShareDto);
+        return ResponseResult.success(share);
+    }
 
     @GetMapping("/page-shares")
     public ResponseResult getShares(@RequestParam int pageNum, @RequestParam int pageSize) {

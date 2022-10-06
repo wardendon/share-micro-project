@@ -20,6 +20,8 @@ public interface ShareService {
 
     List<Share> finAll();
 
+    // List<Share> findShares(Boolean showFlag,AudiStatusEnum audiStatus);
+
     String getNumber(int number);
 
     /**

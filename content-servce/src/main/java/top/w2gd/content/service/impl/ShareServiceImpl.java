@@ -4,14 +4,19 @@ import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import top.w2gd.content.domain.dto.AuditShareDto;
+import top.w2gd.content.domain.dto.UserAddBounsDto;
+import top.w2gd.content.domain.entity.MidUserShare;
 import top.w2gd.content.domain.entity.Share;
+import top.w2gd.content.domain.enums.ShareAuditEnums;
 import top.w2gd.content.repository.ShareRepository;
+import top.w2gd.content.service.MidUserShareService;
 import top.w2gd.content.service.ShareService;
 
 import java.util.List;
@@ -26,6 +31,10 @@ import java.util.Objects;
 public class ShareServiceImpl implements ShareService {
 
     private final ShareRepository shareRepository;
+
+    private final MidUserShareService midUserShareService;
+
+    private final RocketMQTemplate rocketMQTemplate;
     @Override
     public Share findById(Integer id) {
         return shareRepository.findById(id).orElse(null);
@@ -51,16 +60,36 @@ public class ShareServiceImpl implements ShareService {
     @Override
     public Share auditShare(AuditShareDto auditShareDto) {
         Share share = shareRepository.findById(auditShareDto.getId()).orElse(null);
+        assert share != null;
         if (!Objects.equals("NOT_YET", share.getAuditStatus())) {
             throw new IllegalArgumentException("参数非法！该分享已审核！");
         }
         share.setAuditStatus(auditShareDto.getShareAuditEnums().toString());
         share.setReason(auditShareDto.getReason());
         share.setShowFlag(auditShareDto.getShowFlag() ? 1 : 0);
-        shareRepository.saveAndFlush(share);
+
+        Share newShare = shareRepository.saveAndFlush(share);
+        // 向中件表插入数据
+        midUserShareService.insert(
+                MidUserShare.builder()
+                        .shareId(newShare.getId())
+                        .userId(newShare.getUserId())
+                        .build()
+
+        );
+
+        // 如果是PASS,那么发送消息给rocketmq,让用户中心去消费，并为发布人添加积分
+        if(ShareAuditEnums.PASS.equals(auditShareDto.getShareAuditEnums())) {
+            rocketMQTemplate.convertAndSend(
+                    "add-bonus",
+                    UserAddBounsDto.builder()
+                            .userId(share.getUserId())
+                            .bonus(50)
+                            .build());
+
+        }
         return share;
     }
-
 
     @Override
     public String blockHandlerGetNumber(int number, BlockException e) {
