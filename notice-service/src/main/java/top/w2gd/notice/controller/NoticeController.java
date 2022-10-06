@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.w2gd.notice.common.ResponseResult;
 import top.w2gd.notice.common.ResultCode;
@@ -48,5 +49,10 @@ public class NoticeController {
         log.info("接口被限流");
         log.info(exception.toString());
         return ResponseResult.failure(ResultCode.INTERFACE_EXCEED_LOAD);
+    }
+
+    @GetMapping("/page-notices")
+    public ResponseResult getNoticePage(@RequestParam int pageNum, @RequestParam int pageSize) {
+        return ResponseResult.success(noticeService.getNotice(pageNum,pageSize));
     }
 }

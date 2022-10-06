@@ -69,6 +69,9 @@ public class ShareController {
     //
     // }
 
-
+    @GetMapping("/page-shares")
+    public ResponseResult getShares(@RequestParam int pageNum, @RequestParam int pageSize) {
+        return ResponseResult.success(shareService.getPageShare(pageNum, pageSize));
+    }
 
 }

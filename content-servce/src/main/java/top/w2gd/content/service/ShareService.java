@@ -1,6 +1,7 @@
 package top.w2gd.content.service;
 
 import com.alibaba.csp.sentinel.slots.block.BlockException;
+import org.springframework.data.domain.Page;
 import top.w2gd.content.domain.dto.AuditShareDto;
 import top.w2gd.content.domain.entity.Share;
 
@@ -29,5 +30,13 @@ public interface ShareService {
     Share auditShare(AuditShareDto auditShareDto);
 
     String blockHandlerGetNumber(int number, BlockException e);
+
+    /**
+     * 获取分页资源
+     * @param pageNum 当前页
+     * @param pageSize 每页数量
+     * @return 分页数据
+     */
+    Page<Share> getPageShare(int pageNum, int pageSize);
 
 }
