@@ -66,22 +66,14 @@ public class ShareController {
         return ResponseResult.failure(ResultCode.INTERFACE_FALLBACK);
     }
 
-    /**
-     * 此处需要授权
-     * @param auditShareDto auditShareDto
-     * @return ResponseResult
-     */
-    @CheckAuthorization("admin")
-    @PostMapping("/audit")
-    public ResponseResult auditShare( @RequestBody AuditShareDto auditShareDto){
-        log.info(auditShareDto+ ">>>>>>");
-        Share share = shareService.auditShare(auditShareDto);
-        return ResponseResult.success(share);
-    }
-
     @GetMapping("/page-shares")
     public ResponseResult getShares(@RequestParam int pageNum, @RequestParam int pageSize) {
         return ResponseResult.success(shareService.getPageShare(pageNum, pageSize));
+    }
+
+    @GetMapping("/audit-status")
+    public ResponseResult getSharesByAuditStatus(@RequestParam int pageNum,@RequestParam int pageSize, @RequestParam String status) {
+        return ResponseResult.success(shareService.getPageShareByAudit(pageNum,pageSize,status));
     }
 
 }

@@ -41,4 +41,13 @@ public interface ShareService {
      */
     Page<Share> getPageShare(int pageNum, int pageSize);
 
+    /**
+     * 根据审核状态显示查询
+     * @param pageNum 当前页
+     * @param pageSize 每页数量
+     * @param status 审核状态
+     * @return 分页数据
+     */
+    Page<Share> getPageShareByAudit(int pageNum, int pageSize,String status);
+
 }

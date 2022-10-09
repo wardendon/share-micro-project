@@ -17,4 +17,12 @@ public interface ShareRepository extends JpaRepository<Share, Integer> {
      * @return 分页Share
      */
     Page<Share> findByShowFlag(Integer showFlag, PageRequest pageRequest);
+
+    /**
+     * 根据审核状态显示查询
+     * @param auditStatus 审核状态
+     * @param pageRequest 分页
+     * @return 分页Share
+     */
+    Page<Share> findByAuditStatus(String auditStatus, PageRequest pageRequest);
 }

@@ -11,6 +11,7 @@ import top.w2gd.user.common.ResponseResult;
 import top.w2gd.user.common.ResultCode;
 import top.w2gd.user.domain.entity.User;
 import top.w2gd.user.domain.entity.dto.UserDto;
+import top.w2gd.user.domain.vo.LoginVo;
 import top.w2gd.user.service.UserService;
 import top.w2gd.user.utils.JwtOperator;
 
@@ -49,6 +50,6 @@ public class UserController {
         objectObjectHashMap.put("id", user.getId());
         objectObjectHashMap.put("role", user.getRoles());
         String token = jwtOperator.generateToken(objectObjectHashMap);
-        return ResponseResult.success(token);
+        return ResponseResult.success(LoginVo.builder().id(user.getId()).token(token).build());
     }
 }

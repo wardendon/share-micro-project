@@ -61,9 +61,9 @@ public class ShareServiceImpl implements ShareService {
     public Share auditShare(AuditShareDto auditShareDto) {
         Share share = shareRepository.findById(auditShareDto.getId()).orElse(null);
         assert share != null;
-        if (!Objects.equals("NOT_YET", share.getAuditStatus())) {
-            throw new IllegalArgumentException("参数非法！该分享已审核！");
-        }
+        // if (!Objects.equals("NOT_YET", share.getAuditStatus())) {
+        //     throw new IllegalArgumentException("参数非法！该分享已审核！");
+        // }
         share.setAuditStatus(auditShareDto.getShareAuditEnums().toString());
         share.setReason(auditShareDto.getReason());
         share.setShowFlag(auditShareDto.getShowFlag() ? 1 : 0);
@@ -107,5 +107,18 @@ public class ShareServiceImpl implements ShareService {
     public Page<Share> getPageShare(int pageNum, int pageSize) {
         PageRequest pageRequest = PageRequest.of(pageNum, pageSize, Sort.by("createTime").descending());
         return shareRepository.findByShowFlag(1,pageRequest);
+    }
+
+    /**
+     *
+     * @param pageNum 当前页
+     * @param pageSize 每页数量
+     * @param status 审核状态
+     * @return 分页数据
+     */
+    @Override
+    public Page<Share> getPageShareByAudit(int pageNum, int pageSize, String status) {
+        PageRequest pageRequest = PageRequest.of(pageNum,pageSize,Sort.by("createTime").descending());
+        return shareRepository.findByAuditStatus(status,pageRequest);
     }
 }
