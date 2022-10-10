@@ -11,6 +11,7 @@ import top.w2gd.user.common.ResponseResult;
 import top.w2gd.user.common.ResultCode;
 import top.w2gd.user.domain.entity.User;
 import top.w2gd.user.domain.entity.dto.UserDto;
+import top.w2gd.user.domain.entity.dto.UserProfileAuditDto;
 import top.w2gd.user.domain.vo.LoginVo;
 import top.w2gd.user.service.UserService;
 import top.w2gd.user.utils.JwtOperator;
@@ -51,5 +52,21 @@ public class UserController {
         objectObjectHashMap.put("role", user.getRoles());
         String token = jwtOperator.generateToken(objectObjectHashMap);
         return ResponseResult.success(LoginVo.builder().id(user.getId()).token(token).build());
+    }
+
+    /**
+     * 修改个人信息接口
+     * @param userProfileAuditDto 新的个人信息
+     * @return 修改的后的用户信息
+     */
+    @CheckLogin
+    @PostMapping("/update")
+    public ResponseResult auditProfile(@RequestBody UserProfileAuditDto userProfileAuditDto){
+        System.out.println(userProfileAuditDto);
+        User user = userService.auditProfile(userProfileAuditDto);
+        if (user == null){
+            return ResponseResult.failure(ResultCode.PARAM_IS_BLANK);
+        }
+        return ResponseResult.success(user);
     }
 }
