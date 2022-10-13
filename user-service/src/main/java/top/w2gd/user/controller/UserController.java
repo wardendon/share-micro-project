@@ -78,7 +78,7 @@ public class UserController {
     @CheckLogin
     @PostMapping("/update")
     public ResponseResult auditProfile(@RequestBody UserProfileAuditDto userProfileAuditDto){
-        System.out.println(userProfileAuditDto);
+        // System.out.println(userProfileAuditDto);
         User user = userService.auditProfile(userProfileAuditDto);
         if (user == null){
             return ResponseResult.failure(ResultCode.PARAM_IS_BLANK);

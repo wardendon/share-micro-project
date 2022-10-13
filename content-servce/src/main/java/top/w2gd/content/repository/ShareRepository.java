@@ -2,6 +2,7 @@ package top.w2gd.content.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import top.w2gd.content.domain.entity.Share;
 
@@ -30,8 +31,11 @@ public interface ShareRepository extends JpaRepository<Share, Integer> {
 
     /**
      * 根据用户ID返回数据
-     * @param userId 用户ID
+     *
+     * @param userId     用户ID
+     * @param createTime 创建时间
      * @return .
      */
-    List<Share> findAllByUserId(Integer userId);
+    List<Share> findAllByUserId(Integer userId, Sort createTime);
+
 }

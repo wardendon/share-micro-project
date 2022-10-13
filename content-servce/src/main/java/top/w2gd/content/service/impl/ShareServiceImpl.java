@@ -20,7 +20,6 @@ import top.w2gd.content.service.MidUserShareService;
 import top.w2gd.content.service.ShareService;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author w2gd
@@ -123,13 +122,26 @@ public class ShareServiceImpl implements ShareService {
     }
 
     /**
-     *
+     * 根据用户ID 返回shares
      * @param userId 用户ID
      * @return .
      */
     @Override
     public List<Share> getSharesByUserId(Integer userId) {
 
-        return shareRepository.findAllByUserId(userId);
+        return shareRepository.findAllByUserId(userId,Sort.by("createTime").descending());
     }
+
+    /**
+     * 新增 share
+     * @param share share
+     * @return .
+     */
+    @Override
+    public Share addShare(Share share) {
+        return shareRepository.saveAndFlush(share);
+    }
+
+
+
 }

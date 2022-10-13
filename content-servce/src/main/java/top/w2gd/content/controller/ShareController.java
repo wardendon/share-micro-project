@@ -2,19 +2,25 @@ package top.w2gd.content.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import top.w2gd.content.auth.CheckAuthorization;
+import top.w2gd.content.auth.CheckLogin;
 import top.w2gd.content.common.ResponseResult;
 import top.w2gd.content.common.ResultCode;
+import top.w2gd.content.domain.dto.AddShareDto;
 import top.w2gd.content.domain.dto.AuditShareDto;
 import top.w2gd.content.domain.dto.ShareDto;
 import top.w2gd.content.domain.entity.Share;
 import top.w2gd.content.domain.entity.User;
 import top.w2gd.content.openfeign.UserService;
 import top.w2gd.content.service.ShareService;
+
+import java.util.Date;
 
 /**
  * @author w2gd
@@ -92,5 +98,26 @@ public class ShareController {
     public ResponseResult getSharesByUserId(@RequestParam int userId) {
         return ResponseResult.success(shareService.getSharesByUserId(userId));
     }
-
+    @PostMapping("/add")
+    @CheckLogin
+    public ResponseResult addShares(@RequestBody AddShareDto asd){
+        Date date = new Date();
+        Share share = Share.builder()
+                .userId(asd.getUserId())
+                .title(asd.getTitle())
+                .createTime(date)
+                .updateTime(date)
+                .isOriginal(asd.getIsOriginal())
+                .author(asd.getAuthor())
+                .cover(asd.getCover())
+                .summary(asd.getSummary())
+                .price(asd.getPrice())
+                .downloadUrl(asd.getDownloadUrl())
+                .buyCount(0)
+                .showFlag(0)
+                .auditStatus("NOT_YET")
+                .reason("")
+                .build();
+        return ResponseResult.success(shareService.addShare(share));
+    }
 }

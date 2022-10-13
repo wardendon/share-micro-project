@@ -18,10 +18,19 @@ public interface ShareService {
      */
     Share findById(Integer id);
 
+    /**
+     *  获取所有shares
+     * @return all
+     */
     List<Share> finAll();
 
     // List<Share> findShares(Boolean showFlag,AudiStatusEnum audiStatus);
 
+    /**
+     * getNumber
+     * @param number 。
+     * @return 。
+     */
     String getNumber(int number);
 
     /**
@@ -31,6 +40,12 @@ public interface ShareService {
      */
     Share auditShare(AuditShareDto auditShareDto);
 
+    /**
+     * a
+     * @param number .
+     * @param e .
+     * @return .
+     */
     String blockHandlerGetNumber(int number, BlockException e);
 
     /**
@@ -56,5 +71,12 @@ public interface ShareService {
      * @return sharesList
      */
     List<Share> getSharesByUserId(Integer userId);
+
+    /**
+     * 新增
+     * @param share share
+     * @return share
+     */
+    Share addShare(Share share);
 
 }
