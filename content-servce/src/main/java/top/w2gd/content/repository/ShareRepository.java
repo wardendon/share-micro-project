@@ -5,6 +5,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import top.w2gd.content.domain.entity.Share;
 
+import java.util.List;
+
 /**
  * @author w2gd
  */
@@ -25,4 +27,11 @@ public interface ShareRepository extends JpaRepository<Share, Integer> {
      * @return 分页Share
      */
     Page<Share> findByAuditStatus(String auditStatus, PageRequest pageRequest);
+
+    /**
+     * 根据用户ID返回数据
+     * @param userId 用户ID
+     * @return .
+     */
+    List<Share> findAllByUserId(Integer userId);
 }

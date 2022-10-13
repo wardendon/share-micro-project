@@ -121,4 +121,15 @@ public class ShareServiceImpl implements ShareService {
         PageRequest pageRequest = PageRequest.of(pageNum,pageSize,Sort.by("createTime").descending());
         return shareRepository.findByAuditStatus(status,pageRequest);
     }
+
+    /**
+     *
+     * @param userId 用户ID
+     * @return .
+     */
+    @Override
+    public List<Share> getSharesByUserId(Integer userId) {
+
+        return shareRepository.findAllByUserId(userId);
+    }
 }

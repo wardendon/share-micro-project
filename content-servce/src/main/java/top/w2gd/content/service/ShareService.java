@@ -50,4 +50,11 @@ public interface ShareService {
      */
     Page<Share> getPageShareByAudit(int pageNum, int pageSize,String status);
 
+    /**
+     * 根据用户ID返回shares
+     * @param userId 用户ID
+     * @return sharesList
+     */
+    List<Share> getSharesByUserId(Integer userId);
+
 }

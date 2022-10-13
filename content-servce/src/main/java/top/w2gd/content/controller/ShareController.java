@@ -71,9 +71,26 @@ public class ShareController {
         return ResponseResult.success(shareService.getPageShare(pageNum, pageSize));
     }
 
+    /**
+     * 根据审核状态返回shares列表
+     * @param pageNum 页
+     * @param pageSize 数
+     * @param status 状态
+     * @return sharesList
+     */
     @GetMapping("/audit-status")
     public ResponseResult getSharesByAuditStatus(@RequestParam int pageNum,@RequestParam int pageSize, @RequestParam String status) {
         return ResponseResult.success(shareService.getPageShareByAudit(pageNum,pageSize,status));
+    }
+
+    /**
+     * 根据用户id 返回shares
+     * @param userId yhu id
+     * @return .
+     */
+    @GetMapping("/my-shares")
+    public ResponseResult getSharesByUserId(@RequestParam int userId) {
+        return ResponseResult.success(shareService.getSharesByUserId(userId));
     }
 
 }

@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.w2gd.user.auth.CheckLogin;
@@ -12,6 +13,7 @@ import top.w2gd.user.common.ResultCode;
 import top.w2gd.user.domain.entity.User;
 import top.w2gd.user.domain.entity.dto.UserDto;
 import top.w2gd.user.domain.entity.dto.UserProfileAuditDto;
+import top.w2gd.user.domain.vo.BonusVo;
 import top.w2gd.user.domain.vo.LoginVo;
 import top.w2gd.user.service.UserService;
 import top.w2gd.user.utils.JwtOperator;
@@ -39,6 +41,20 @@ public class UserController {
         } else {
             return ResponseResult.failure(ResultCode.RESULT_CODE_DATA_NONE);
         }
+    }
+
+    /**
+     * 获取积分
+     * @param id id
+     * @return bonus
+     */
+    @GetMapping("/bonus")
+    public ResponseResult getBonus(@RequestParam int id){
+        val user = userService.findById(id);
+        if (user == null){
+            return ResponseResult.failure(ResultCode.PARAM_IS_INVALID,"未查到该用户");
+        }
+        return  ResponseResult.success(BonusVo.builder().id(user.getId()).bonus(user.getBonus()).build());
     }
 
     @PostMapping("/login")
