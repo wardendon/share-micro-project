@@ -8,4 +8,5 @@ import top.w2gd.content.domain.entity.MidUserShare;
  */
 public interface MidUserShareRepository extends JpaRepository<MidUserShare,Integer> {
 
+    MidUserShare findByUserIdAndAndShareId(int userId, int shareId);
 }

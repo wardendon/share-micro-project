@@ -6,21 +6,26 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import top.w2gd.content.domain.dto.AuditShareDto;
+import top.w2gd.content.domain.dto.ShareQueryDto;
 import top.w2gd.content.domain.dto.UserAddBounsDto;
 import top.w2gd.content.domain.entity.MidUserShare;
 import top.w2gd.content.domain.entity.Share;
 import top.w2gd.content.domain.enums.ShareAuditEnums;
+import top.w2gd.content.repository.MidUserShareRepository;
 import top.w2gd.content.repository.ShareRepository;
 import top.w2gd.content.service.MidUserShareService;
 import top.w2gd.content.service.ShareService;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
-
 /**
  * @author w2gd
  */
@@ -33,22 +38,65 @@ public class ShareServiceImpl implements ShareService {
 
     private final MidUserShareService midUserShareService;
 
+    private  final  MidUserShareRepository midUserShareRepository;
+
     private final RocketMQTemplate rocketMQTemplate;
     @Override
     public Share findById(Integer id) {
         return shareRepository.findById(id).orElse(null);
     }
 
-    @Override
-    public List<Share> finAll() {
-        return shareRepository.findAll();
-    }
     @SentinelResource(value = "getNumber",blockHandler = "blockHandlerGetNumber")
     @Override
     public String getNumber(int number) {
         return "number = {"+ number +"}";
     }
 
+    /**
+     * 获取所有资源
+     * 可按条件查询
+     * @return List
+     */
+    @Override
+    public Page<Share> getAll(int pageNum, int pageSize, ShareQueryDto shareQueryDto, Integer userId) {
+        // 分页规则
+        Pageable pageable = PageRequest.of(pageNum, pageSize,Sort.by(Sort.Direction.DESC,"createTime"));
+        // 条件查询
+        Page<Share> all = shareRepository.findAll(new Specification<Share>() {
+            @Override
+            public Predicate toPredicate(Root<Share> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicates = new ArrayList<>();
+                // 是否显示条件
+                predicates.add(criteriaBuilder.equal(root.get("showFlag").as(Integer.class), 1));
+                // 处理查询封装对象空值问题
+                if (shareQueryDto != null) {
+                    // 拼接条件
+                    if (shareQueryDto.getTitle() != null && !shareQueryDto.getTitle().equals("")) {
+                        predicates.add(criteriaBuilder.like(root.get("title").as(String.class), "%" + shareQueryDto.getTitle() + "%"));
+                    }
+                    if (shareQueryDto.getSummary() != null && !shareQueryDto.getSummary().equals("")) {
+                        predicates.add(criteriaBuilder.like(root.get("summary").as(String.class), "%" + shareQueryDto.getSummary() + "%"));
+                    }
+                    if (shareQueryDto.getAuthor() != null && !shareQueryDto.getAuthor().equals("")) {
+                        predicates.add(criteriaBuilder.like(root.get("author").as(String.class), "%" + shareQueryDto.getAuthor() + "%"));
+                    }
+                }
+                return criteriaBuilder.and(predicates.toArray(predicates.toArray(new Predicate[predicates.size()])));
+            }
+        }, pageable);
+        if (userId == null){
+            all.forEach(share -> share.setDownloadUrl(""));
+        }else {
+            all.forEach(share -> {
+                Integer shareId = share.getId();
+                MidUserShare midUserShare = midUserShareService.selectRecordWithUserIdAndShareId(userId, shareId);
+                if (midUserShare == null) {
+                    share.setDownloadUrl("");
+                }
+            });
+        }
+        return all;
+    }
 
     /**
      * 审核分享内容
@@ -132,16 +180,40 @@ public class ShareServiceImpl implements ShareService {
         return shareRepository.findAllByUserId(userId,Sort.by("createTime").descending());
     }
 
-    /**
-     * 新增 share
-     * @param share share
-     * @return .
-     */
     @Override
     public Share addShare(Share share) {
         return shareRepository.saveAndFlush(share);
     }
 
 
+    // @Override
+    // public ResponseResult shareList(Integer pageIndex, Integer pageSize, ShareQueryDto shareQueryDto, Integer userId) {
+    //     Pageable pageable = PageRequest.of(pageIndex,pageSize);
+    //     List<Share> list = new ArrayList<>();
+    //     Page<Share> result = shareRepository.findByShowFlagAndTitleLikeAndAuthorLikeAndSummaryLike(
+    //             1,
+    //             "%"+shareQueryDto.getTitle()+"%",
+    //             "%"+shareQueryDto.getName()+"%",
+    //             "%"+shareQueryDto.getSummary()+"%",
+    //             pageable
+    //             );
+    //     // 用户没登录
+    //     if(userId == 0) {
+    //         result.getContent().forEach(share -> {
+    //             share.setDownloadUrl("");
+    //             list.add(share);
+    //         });
+    //     }else {
+    //         result.getContent().forEach(share -> {
+    //             MidUserShare midUserShare = MidUserShare.builder().shareId(share.getId()).userId(userId).build();
+    //             Example<MidUserShare> example = Example.of(midUserShare);
+    //             if (!midUserShareRepository.findOne(example).isPresent()) {
+    //                 share.setDownloadUrl("");
+    //             }
+    //             list.add(share);
+    //         });
+    //     }
+    //     return ResponseResult.success(list);
+    // }
 
 }

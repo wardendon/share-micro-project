@@ -2,6 +2,7 @@ package top.w2gd.content.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSONObject;
+import io.jsonwebtoken.Claims;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,11 +16,14 @@ import top.w2gd.content.common.ResultCode;
 import top.w2gd.content.domain.dto.AddShareDto;
 import top.w2gd.content.domain.dto.AuditShareDto;
 import top.w2gd.content.domain.dto.ShareDto;
+import top.w2gd.content.domain.dto.ShareQueryDto;
 import top.w2gd.content.domain.entity.Share;
 import top.w2gd.content.domain.entity.User;
 import top.w2gd.content.openfeign.UserService;
 import top.w2gd.content.service.ShareService;
+import top.w2gd.content.utils.JwtOperator;
 
+import java.awt.print.Printable;
 import java.util.Date;
 
 /**
@@ -33,16 +37,38 @@ public class ShareController {
     private final ShareService shareService;
     private final UserService userService;
 
+    private final JwtOperator jwtOperator;
+    final Integer MAX_SIZE = 50;
 
-    @GetMapping("/all")
+    /**
+     * 获取所有资源
+     * @param pageNum 当前页
+     * @param pageSize 每页数量
+     * @param shareQueryDto shareQueryDto
+     * @param token token
+     * @return 符合条件的数据
+     */
+    @PostMapping("/all")
     @SentinelResource(value = "getAllShares")
-    public ResponseResult getAllShares(){
-        String result = shareService.getNumber(2022);
-        log.info(result);
-        if ("BLOCKED".equals(result)) {
-            return ResponseResult.failure(ResultCode.INTERFACE_EXCEED_LOAD);
+    public ResponseResult getAllShares(
+            @RequestParam(required = false,defaultValue = "0") int pageNum,
+            @RequestParam(required = false,defaultValue = "7") int pageSize,
+            @RequestBody(required = false) ShareQueryDto shareQueryDto,
+            @RequestHeader(required = false,value = "X-Token") String token
+    ){
+        if (pageSize > MAX_SIZE) {
+            pageSize = MAX_SIZE;
         }
-        return ResponseResult.success(shareService.finAll());
+        Integer userId = null;
+        if (token != null) {
+            userId = getUserIdFromToken(token);
+        }
+        // String result = shareService.getNumber(2022);
+        // log.info(result);
+        // if ("BLOCKED".equals(result)) {
+        //     return ResponseResult.failure(ResultCode.INTERFACE_EXCEED_LOAD);
+        // }
+        return ResponseResult.success(shareService.getAll(pageNum,pageSize,shareQueryDto,userId));
     }
 
     @GetMapping("{id}")
@@ -72,6 +98,12 @@ public class ShareController {
         return ResponseResult.failure(ResultCode.INTERFACE_FALLBACK);
     }
 
+    /**
+     * 返回 findByShowFlag = 1 的分享，分页
+     * @param pageNum 页数
+     * @param pageSize 每页数量
+     * @return sharesList
+     */
     @GetMapping("/page-shares")
     public ResponseResult getShares(@RequestParam int pageNum, @RequestParam int pageSize) {
         return ResponseResult.success(shareService.getPageShare(pageNum, pageSize));
@@ -120,4 +152,35 @@ public class ShareController {
                 .build();
         return ResponseResult.success(shareService.addShare(share));
     }
+
+    // 根据条件获取数据
+    // @GetMapping("/list")
+    // public ResponseResult shareList(
+    //         @RequestParam(defaultValue = "0",required = false,value = "pageIndex") Integer pageIndex,
+    //         @RequestParam(defaultValue = "10",required = false,value = "pageSize") Integer pageSize,
+    //         @RequestParam(defaultValue = "",required = false,value = "title") String title,
+    //         @RequestParam(defaultValue = "",required = false,value = "name") String name,
+    //         @RequestParam(defaultValue = "",required = false,value = "summary") String summary,
+    //         @RequestHeader(value = "X-Token",required = false) String token
+    // ) {
+    //     Integer userId =0;
+    //     if (token != null) {
+    //         userId = getUserIdFromToken(token);
+    //     }
+    //     if (pageSize > 100) {
+    //         pageSize = 10;
+    //     }
+    //     ShareQueryDto shareQueryDto = ShareQueryDto.builder().title(title).summary(summary).name(name).build();
+    //     return shareService.shareList(pageIndex,pageSize,shareQueryDto, userId);
+    // }
+
+    /**
+     * 解析 token 返回 id
+     * @param token token
+     * @return id
+     */
+    private Integer getUserIdFromToken(String token) {
+        return Integer.parseInt(jwtOperator.getClaimsFromToken(token).get("id").toString());
+    }
+
 }

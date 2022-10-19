@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.w2gd.user.auth.CheckLogin;
@@ -32,7 +31,7 @@ public class UserController {
     private final JwtOperator jwtOperator;
 
     @GetMapping("{id}")
-    @CheckLogin
+    // @CheckLogin // 使用登录检查后，openfeign 调用的服务没有接收到token,就会调用失败
     public ResponseResult getUserById(@PathVariable Integer id) {
 
         val user  = userService.findById(id);
@@ -78,7 +77,6 @@ public class UserController {
     @CheckLogin
     @PostMapping("/update")
     public ResponseResult auditProfile(@RequestBody UserProfileAuditDto userProfileAuditDto){
-        // System.out.println(userProfileAuditDto);
         User user = userService.auditProfile(userProfileAuditDto);
         if (user == null){
             return ResponseResult.failure(ResultCode.PARAM_IS_BLANK);

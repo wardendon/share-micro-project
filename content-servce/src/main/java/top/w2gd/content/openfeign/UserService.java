@@ -1,6 +1,7 @@
 package top.w2gd.content.openfeign;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import top.w2gd.content.common.ResponseResult;

@@ -2,7 +2,9 @@ package top.w2gd.content.service;
 
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import top.w2gd.content.domain.dto.AuditShareDto;
+import top.w2gd.content.domain.dto.ShareQueryDto;
 import top.w2gd.content.domain.entity.Share;
 
 import java.util.List;
@@ -19,12 +21,16 @@ public interface ShareService {
     Share findById(Integer id);
 
     /**
-     *  获取所有shares
-     * @return all
+     * 分页资源
+     * @param pageNum  当前页
+     * @param pageSize 每页数量
+     * @param shareQueryDto 模糊查询参数
+     * @param userId 用户id
+     * @return Page<Share>
      */
-    List<Share> finAll();
+    Page<Share> getAll(int pageNum, int pageSize, ShareQueryDto shareQueryDto,Integer userId);
 
-    // List<Share> findShares(Boolean showFlag,AudiStatusEnum audiStatus);
+
 
     /**
      * getNumber
@@ -79,4 +85,7 @@ public interface ShareService {
      */
     Share addShare(Share share);
 
+
+
+    // ResponseResult shareList(Integer pageIndex, Integer pageSize, ShareQueryDto shareQueryDto, Integer userId);
 }
