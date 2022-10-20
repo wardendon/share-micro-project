@@ -4,6 +4,7 @@ import com.alibaba.csp.sentinel.slots.block.BlockException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import top.w2gd.content.domain.dto.AuditShareDto;
+import top.w2gd.content.domain.dto.ExchangeRecordDto;
 import top.w2gd.content.domain.dto.ShareQueryDto;
 import top.w2gd.content.domain.entity.Share;
 
@@ -95,4 +96,13 @@ public interface ShareService {
      * @return 兑换的资源
      */
     Share exchange(Integer shareId,Integer userId,String token) throws Exception;
+
+    /**
+     * 查询兑换记录
+     * @param pageNum 分页
+     * @param pageSize 分页
+     * @param userId 用户id
+     * @return 分页兑换记录
+     */
+    Page<ExchangeRecordDto> getExchangeRecord(Integer pageNum, Integer pageSize, Integer userId);
 }

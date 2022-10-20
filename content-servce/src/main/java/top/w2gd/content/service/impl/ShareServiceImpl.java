@@ -11,10 +11,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import top.w2gd.content.common.ResponseResult;
-import top.w2gd.content.domain.dto.AuditShareDto;
-import top.w2gd.content.domain.dto.ShareQueryDto;
-import top.w2gd.content.domain.dto.UserAddBounsDto;
-import top.w2gd.content.domain.dto.UserProfileAuditDto;
+import top.w2gd.content.domain.dto.*;
 import top.w2gd.content.domain.entity.BonusEventLog;
 import top.w2gd.content.domain.entity.MidUserShare;
 import top.w2gd.content.domain.entity.Share;
@@ -252,6 +249,20 @@ public class ShareServiceImpl implements ShareService {
             }
         }
         return share;
+    }
+
+    /**
+     * 查询兑换记录
+     *
+     * @param pageNum  分页
+     * @param pageSize 分页
+     * @param userId   用户id
+     * @return 分页兑换记录
+     */
+    @Override
+    public Page<ExchangeRecordDto> getExchangeRecord(Integer pageNum, Integer pageSize, Integer userId) {
+        Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by("createTime").descending());
+        return shareRepository.findExchange(userId,pageable);
     }
 
 

@@ -7,6 +7,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import top.w2gd.content.domain.dto.ExchangeRecordDto;
 import top.w2gd.content.domain.entity.Share;
 
 import java.util.List;
@@ -46,4 +48,6 @@ public interface ShareRepository extends JpaRepository<Share, Integer> , JpaSpec
 
     // Page<Share> findByShowFlagAndTitleLikeAndAuthorLikeAndSummaryLike( Integer showFlag, String title, String author, String summary, Pageable pageable);
 
+    @Query(value = "SELECT new top.w2gd.content.domain.dto.ExchangeRecordDto(s.title,s.cover,s.createTime) FROM Share s WHERE s.id IN (SELECT m.shareId FROM MidUserShare m WHERE m.userId = ?1) AND s.userId <> ?1")
+    Page<ExchangeRecordDto> findExchange(Integer userId, Pageable pageable);
 }

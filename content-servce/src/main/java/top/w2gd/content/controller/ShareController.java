@@ -198,4 +198,19 @@ public class ShareController {
         return ResponseResult.success(exchange);
     }
 
+    /**
+     * 我的兑换接口
+     * @param token token
+     * @param pageNum  分页
+     * @param pageSize  分页
+     * @return 返回
+     */
+    @GetMapping("/exchange-record")
+    public ResponseResult getExchangeRecord(@RequestHeader(name = "X-Token") String token,
+                                            @RequestParam(required = false,defaultValue = "0") Integer pageNum,
+                                            @RequestParam(required = false,defaultValue = "5") Integer pageSize) {
+        Integer userId = getUserIdFromToken(token);
+        return ResponseResult.success(shareService.getExchangeRecord(pageNum,pageSize,userId));
+    }
+
 }
