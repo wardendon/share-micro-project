@@ -83,4 +83,24 @@ public class UserController {
         }
         return ResponseResult.success(user);
     }
+
+    /**
+     * 积分明细
+     * @param token 。
+     * @param pageNum 。
+     * @param pageSize 。
+     * @return 。
+     */
+    @GetMapping("/bonus-record")
+    public ResponseResult getBonusRecord(@RequestHeader(name = "X-Token") String token,
+                                         @RequestParam(required = false,defaultValue = "0") Integer pageNum,
+                                         @RequestParam(required = false,defaultValue = "5") Integer pageSize){
+        Integer userId = getUserIdFromToken(token);
+        return ResponseResult.success(userService.getBonusRecord(userId,pageNum,pageSize));
+    }
+
+
+    private Integer getUserIdFromToken(String token) {
+        return Integer.parseInt(jwtOperator.getClaimsFromToken(token).get("id").toString());
+    }
 }

@@ -6,10 +6,16 @@ import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import top.w2gd.user.domain.entity.BonusEventLog;
 import top.w2gd.user.domain.entity.User;
 import top.w2gd.user.domain.entity.dto.UserDto;
 import top.w2gd.user.domain.entity.dto.UserProfileAuditDto;
+import top.w2gd.user.repository.BonusEventLogRepository;
 import top.w2gd.user.repository.UserRepository;
 import top.w2gd.user.service.UserService;
 import top.w2gd.user.utils.JwtOperator;
@@ -27,6 +33,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final JwtOperator jwtOperator;
+
+    private final BonusEventLogRepository bonusEventLogRepository;
 
     @Override
     public User findById(Integer id) {
@@ -65,5 +73,19 @@ public class UserServiceImpl implements UserService {
             return null;
         }
 
+    }
+
+    /**
+     * 获取积分明细
+     *
+     * @param userId   用户id
+     * @param pageNum  分页
+     * @param pageSize 分页
+     * @return 分页积分明细
+     */
+    @Override
+    public Page<BonusEventLog> getBonusRecord(Integer userId, Integer pageNum, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by("createTime").descending());
+        return bonusEventLogRepository.findByUserId(userId,pageable);
     }
 }
