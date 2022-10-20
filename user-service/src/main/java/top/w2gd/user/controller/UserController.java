@@ -31,7 +31,7 @@ public class UserController {
     private final JwtOperator jwtOperator;
 
     @GetMapping("{id}")
-    // @CheckLogin // 使用登录检查后，openfeign 调用的服务没有接收到token,就会调用失败
+    @CheckLogin // 使用登录检查后，openfeign 调用的服务如果没有传token过来,就会调用失败
     public ResponseResult getUserById(@PathVariable Integer id) {
 
         val user  = userService.findById(id);

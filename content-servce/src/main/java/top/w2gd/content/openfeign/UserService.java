@@ -2,9 +2,9 @@ package top.w2gd.content.openfeign;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import top.w2gd.content.common.ResponseResult;
+import top.w2gd.content.domain.dto.UserProfileAuditDto;
 import top.w2gd.content.openfeign.fallback.UserServiceFallback;
 import top.w2gd.content.openfeign.fallback.UserServiceFallbackFactory;
 
@@ -20,6 +20,8 @@ public interface UserService {
      * @return User
      */
     @GetMapping("{id}")
-    ResponseResult getUser(@PathVariable(value = "id") int id);
+    ResponseResult getUser(@PathVariable(value = "id") Integer id,@RequestHeader(name = "X-Token") String token);
 
+    @PostMapping("/update")
+    ResponseResult auditUserData(@RequestBody UserProfileAuditDto userProfileAuditDto, @RequestHeader(name = "X-Token") String token);
 }

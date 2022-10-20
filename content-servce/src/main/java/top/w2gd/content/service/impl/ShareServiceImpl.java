@@ -2,6 +2,7 @@ package top.w2gd.content.service.impl;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
+import com.alibaba.fastjson.JSONObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
@@ -9,22 +10,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import top.w2gd.content.common.ResponseResult;
 import top.w2gd.content.domain.dto.AuditShareDto;
 import top.w2gd.content.domain.dto.ShareQueryDto;
 import top.w2gd.content.domain.dto.UserAddBounsDto;
+import top.w2gd.content.domain.dto.UserProfileAuditDto;
+import top.w2gd.content.domain.entity.BonusEventLog;
 import top.w2gd.content.domain.entity.MidUserShare;
 import top.w2gd.content.domain.entity.Share;
+import top.w2gd.content.domain.entity.User;
 import top.w2gd.content.domain.enums.ShareAuditEnums;
+import top.w2gd.content.openfeign.UserService;
+import top.w2gd.content.repository.BonusEventLogRepository;
 import top.w2gd.content.repository.MidUserShareRepository;
 import top.w2gd.content.repository.ShareRepository;
 import top.w2gd.content.service.MidUserShareService;
 import top.w2gd.content.service.ShareService;
-
+import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 /**
  * @author w2gd
@@ -41,6 +50,10 @@ public class ShareServiceImpl implements ShareService {
     private  final  MidUserShareRepository midUserShareRepository;
 
     private final RocketMQTemplate rocketMQTemplate;
+
+    private final UserService userService;
+
+    private final BonusEventLogRepository bonusEventLogRepository;
     @Override
     public Share findById(Integer id) {
         return shareRepository.findById(id).orElse(null);
@@ -183,6 +196,62 @@ public class ShareServiceImpl implements ShareService {
     @Override
     public Share addShare(Share share) {
         return shareRepository.saveAndFlush(share);
+    }
+
+    /**
+     * 兑换资源
+     *
+     * @param shareId 资源id
+     * @param userId  用户id
+     * @return 兑换的资源
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Share exchange(Integer shareId, Integer userId, String token) throws Exception {
+        // 查询资源单价
+        Share share = shareRepository.findById(shareId).orElse(null);
+        assert share != null;
+        Integer price = share.getPrice();
+
+        // 查询用户是否已经兑换过
+        MidUserShare midUserShare = midUserShareService.selectRecordWithUserIdAndShareId(userId, shareId);
+        // 是否兑换过
+        if (midUserShare != null) {
+            return share;
+        } else {
+            // openfeign调用远程服务获取用户信息
+            ResponseResult result = userService.getUser(userId, token);
+            String jsonStrings = JSONObject.toJSONString(result.getData());
+            JSONObject jsonObject = JSONObject.parseObject(jsonStrings);
+            User user = JSONObject.toJavaObject(jsonObject, User.class);
+            if (user.getBonus() > price) {
+                ResponseResult newData = userService.auditUserData(UserProfileAuditDto.builder().id(user.getId()).bonus(user.getBonus() - price).build(), token);
+                System.out.println(newData);
+                // String newDataStr = JSONObject.toJSONString(newData.getData());
+                // JSONObject newJsonObj = JSONObject.parseObject(newDataStr);
+                // User newUser = JSONObject.toJavaObject(newJsonObj, User.class);
+
+                // 插入用户兑换表记录
+                midUserShareService.insert(MidUserShare.builder().shareId(share.getId()).userId(userId).build());
+
+                // 修改兑换次数
+                share.setBuyCount(share.getBuyCount() + 1);
+                share = shareRepository.saveAndFlush(share);
+
+                // 插入积分变动记录
+                bonusEventLogRepository.saveAndFlush(BonusEventLog.builder()
+                        .userId(userId)
+                        .value("-" + price)
+                        .event("EXCHANGE")
+                        .createTime(new Date())
+                        .description("兑换资源")
+                        .build());
+
+            } else {
+                throw new Exception("积分不足");
+            }
+        }
+        return share;
     }
 
 

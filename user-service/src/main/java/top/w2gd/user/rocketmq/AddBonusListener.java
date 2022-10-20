@@ -34,7 +34,7 @@ public class AddBonusListener implements RocketMQListener<UserAddBonusDto> {
             userRepository.saveAndFlush(user);
         }
         bonusEventLogRepository.saveAndFlush(BonusEventLog.builder()
-                .userId(userId).event("CONTRIBUTE")
+                .userId(userId).event("CONTRIBUTE").value(userAddBonusDto.getBonus().toString())
                 .createTime(new Date())
                 .description("投稿积分")
                 .build());

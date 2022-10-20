@@ -1,4 +1,5 @@
-package top.w2gd.user.domain.entity.dto;
+package top.w2gd.content.domain.dto;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,8 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 修改个人信息传输类
- * @author w2gd
+ * @Description 修改个人信息传输类
+ * @Date 2022-10-09-14-45
+ * @Author
  */
 @Data
 @AllArgsConstructor
@@ -26,4 +28,5 @@ public class UserProfileAuditDto {
     private String avatar;
 
     private Integer bonus;
+
 }

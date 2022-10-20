@@ -86,6 +86,13 @@ public interface ShareService {
     Share addShare(Share share);
 
 
-
     // ResponseResult shareList(Integer pageIndex, Integer pageSize, ShareQueryDto shareQueryDto, Integer userId);
+
+    /**
+     * 兑换资源
+     * @param shareId 资源id
+     * @param userId 用户id
+     * @return 兑换的资源
+     */
+    Share exchange(Integer shareId,Integer userId,String token) throws Exception;
 }

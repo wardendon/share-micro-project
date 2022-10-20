@@ -73,7 +73,7 @@ public class ShareController {
 
     @GetMapping("{id}")
     @SentinelResource(value = "getSharesById")
-    public ResponseResult getShareById(@PathVariable Integer id) {
+    public ResponseResult getShareById(@PathVariable Integer id,@RequestHeader(value = "X-Token") String token) {
         String result = shareService.getNumber(2025);
         log.info(result);
         if ("BLOCKED".equals(result)) {
@@ -81,7 +81,7 @@ public class ShareController {
         }
         Share share = shareService.findById(id);
         Integer userId = share.getUserId();
-        ResponseResult res = userService.getUser(userId);
+        ResponseResult res = userService.getUser(userId,token);
         String jsonString = JSONObject.toJSONString(res.getData());
         JSONObject obj = JSONObject.parseObject(jsonString);
         User user = JSONObject.toJavaObject(obj,User.class);
@@ -181,6 +181,21 @@ public class ShareController {
      */
     private Integer getUserIdFromToken(String token) {
         return Integer.parseInt(jwtOperator.getClaimsFromToken(token).get("id").toString());
+    }
+
+    /**
+     * 兑换接口
+     * @param shareId 内容id
+     * @param token token
+     * @return 兑换内容详情
+     * @throws Exception
+     */
+    @PostMapping("/exchange")
+    public ResponseResult exchange(@RequestParam int shareId,@RequestHeader(name = "X-Token") String token) throws Exception {
+        System.out.println(token);
+        Integer userId = getUserIdFromToken(token);
+        Share exchange = shareService.exchange(shareId, userId, token);
+        return ResponseResult.success(exchange);
     }
 
 }
