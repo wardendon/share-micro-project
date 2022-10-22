@@ -5,3 +5,11 @@
 - user-service 用户微服务
 - content-service 内容微服务
 - gateway 网关微服务
+
+- Nacos
+
+![image-20221023000957602](README.assets/image-20221023000957602.png)
+
+- Rocketmq
+
+![image-20221023001227756](README.assets/image-20221023001227756.png)
